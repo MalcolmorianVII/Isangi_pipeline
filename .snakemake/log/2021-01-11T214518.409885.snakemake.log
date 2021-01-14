@@ -1,0 +1,45 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 8
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1	assemb_stat
+	1	denovo
+	3
+Select jobs to execute...
+
+[Mon Jan 11 21:45:18 2021]
+rule denovo:
+    input: /home/ubuntu/data/belson/test_data/2021.01.04/FAO60983_pass_barcode02_b01ddb04.fastq
+    output: /home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.11/FAO60983_pass_barcode02_b01ddb04_flye
+    jobid: 7
+    wildcards: sample=FAO60983_pass_barcode02_b01ddb04
+
+[Mon Jan 11 21:56:06 2021]
+Finished job 7.
+1 of 3 steps (33%) done
+Select jobs to execute...
+
+[Mon Jan 11 21:56:06 2021]
+rule assemb_stat:
+    input: /home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.11/FAO60983_pass_barcode02_b01ddb04_flye
+    output: /home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.11/FAO60983_pass_barcode02_b01ddb04_assembly_stat.txt
+    jobid: 8
+    wildcards: sample=FAO60983_pass_barcode02_b01ddb04
+
+[Mon Jan 11 21:56:06 2021]
+Finished job 8.
+2 of 3 steps (67%) done
+Select jobs to execute...
+
+[Mon Jan 11 21:56:06 2021]
+localrule all:
+    input: /home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.08/FAO60983_pass_barcode02_b01ddb04_reads_stat.txt, /home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.08/FAO60983_pass_barcode02_b01ddb04_coverage.txt, /home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.08/FAO60983_pass_barcode02_b01ddb04_reads_mapped.txt, /home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.11/FAO60983_pass_barcode02_b01ddb04_flye, /home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.11/FAO60983_pass_barcode02_b01ddb04_assembly_stat.txt
+    jobid: 0
+
+[Mon Jan 11 21:56:06 2021]
+Finished job 0.
+3 of 3 steps (100%) done
+Complete log: /home/ubuntu/data/belson/isangi_nanopore/qc/scripts/.snakemake/log/2021-01-11T214518.409885.snakemake.log
