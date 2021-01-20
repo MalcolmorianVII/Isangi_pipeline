@@ -1,4 +1,0 @@
-Building DAG of jobs...
-MissingInputException in line 67 of /home/ubuntu/data/belson/isangi_nanopore/qc/scripts/nanopore_qc.smk:
-Missing input files for rule assemb_stat:
-{{rules.denovo.output}}/assembly.fasta

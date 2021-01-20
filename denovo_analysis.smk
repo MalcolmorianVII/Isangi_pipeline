@@ -47,6 +47,8 @@ rule medaka:
 		rules.raconX4.output
 	output:
 		temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_medaka')
+	conda:
+		'envs/medaka.yml'
 	shell:
 		'medaka consensus -d {input} -o {output}'
 
