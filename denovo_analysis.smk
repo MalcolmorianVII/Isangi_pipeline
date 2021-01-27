@@ -1,4 +1,5 @@
 samples = ['FAO60983_pass_barcode02_b01ddb04']
+root_dir = ['/home/ubuntu/data/belson/test_data/2021.01.04']
 rule all:
         input:
                 expand('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_circularised',sample=samples),
@@ -8,7 +9,7 @@ rule all:
 
 rule denovo:
         input:
-                '/home/ubuntu/data/belson/test_data/2021.01.04/{sample}.fastq'
+                expand('{root}/{sample}.fastq',root=root_dir,sample=samples)
         output:
                 directory('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_flye')
         shell:
@@ -20,37 +21,37 @@ rule raconX1:
 	output:
 		temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_raconX1.fasta')
 	shell:
-		'racon {input}/assembly_fasta > {output}'
+		'minimap2 -x map-ont {input} {rules.denovo.input} > racon.paf && racon -t 4 {rules.denovo.input} racon.paf {input}/assembly.fasta > {output}'
 rule raconX2:
         input:
                 rules.raconX1.output
         output:
                 temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_raconX2.fasta')
         shell:
-                'racon {input} > {output}'
+                'minimap2 -x map-ont {input} {rules.denovo.input} > racon2.paf && racon -t 4 {rules.denovo.input} racon2.paf {input} > {output}'
 rule raconX3:
         input:
                 rules.raconX2.output
         output:
                 temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_raconX3.fasta')
         shell:
-                'racon {input} > {output}'
+                'minimap2 -x map-ont {input} {rules.denovo.input} > racon3.paf && racon -t 4 {rules.denovo.input} racon3.paf {input} > {output}'
 rule raconX4:
         input:
                 rules.raconX3.output
         output:
                 temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_raconX4.fasta')
         shell:
-                'racon {input} > {output}'
+                'minimap2 -x map-ont {input} {rules.denovo.input} > racon4.paf && racon -t 4 {rules.denovo.input} racon4.paf {input} > {output}'
 rule medaka:
 	input:
 		rules.raconX4.output
 	output:
-		temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_medaka')
+		directory('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_medaka')
 	conda:
 		'envs/medaka.yml'
 	shell:
-		'medaka consensus -d {input} -o {output}'
+		'medaka_consensus -i {rules.denovo.input} -d {input} -t 8  -m r941_min_fast_g303 -o {output}'
 
 rule circlator:
 	input:
@@ -58,7 +59,7 @@ rule circlator:
 	output:
 		directory('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_circularised')
 	shell:
-		'circlator all --merge_min_id 85 --merge_breaklen 1000 {input}/*.fasta {output}'
+		'circlator all --merge_min_id 85 --merge_breaklen 1000 {input}/*.fasta {rules.denovo.input} {output}'
 
 
 rule amrfinder:
@@ -66,7 +67,7 @@ rule amrfinder:
 		rules.circlator.output
 
 	output:
-		directory('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_amrfinder')
+		'/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_amrfinder'
 	shell:
 		'amrfinder --plus -n {input}/06.fixstart.fasta -O Salmonella > {output}'
 
