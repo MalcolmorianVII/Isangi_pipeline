@@ -19,30 +19,34 @@ rule raconX1:
 	input:
 		rules.denovo.output
 	output:
-		temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_raconX1.fasta')
+		x1 = temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_raconX1.fasta'),
+		pf1 = temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}.racon.paf')
 	shell:
-		'minimap2 -x map-ont {input} {rules.denovo.input} > racon.paf && racon -t 4 {rules.denovo.input} racon.paf {input}/assembly.fasta > {output}'
+		'minimap2 -x map-ont {input} {rules.denovo.input} > {ouput.pf1} && racon -t 4 {rules.denovo.input} {output.pf1} {input}/assembly.fasta > {output}'
 rule raconX2:
         input:
                 rules.raconX1.output
         output:
-                temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_raconX2.fasta')
+                x2 = temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_raconX2.fasta'),
+		pf2 = temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}.racon2.paf')
         shell:
-                'minimap2 -x map-ont {input} {rules.denovo.input} > racon2.paf && racon -t 4 {rules.denovo.input} racon2.paf {input} > {output}'
+                'minimap2 -x map-ont {input} {rules.denovo.input} > {output.pf2} && racon -t 4 {rules.denovo.input} {output.pf2} {input} > {output}'
 rule raconX3:
         input:
                 rules.raconX2.output
         output:
-                temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_raconX3.fasta')
+                x3 = temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_raconX3.fasta'),
+		pf3 = temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}.racon3.paf')
         shell:
-                'minimap2 -x map-ont {input} {rules.denovo.input} > racon3.paf && racon -t 4 {rules.denovo.input} racon3.paf {input} > {output}'
+                'minimap2 -x map-ont {input} {rules.denovo.input} > {output.pf3} && racon -t 4 {rules.denovo.input} {output.pf3} {input} > {output}'
 rule raconX4:
         input:
                 rules.raconX3.output
         output:
-                temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_raconX4.fasta')
+                x4 = temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_raconX4.fasta'),
+		pf4 = temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}.racon4.paf')
         shell:
-                'minimap2 -x map-ont {input} {rules.denovo.input} > racon4.paf && racon -t 4 {rules.denovo.input} racon4.paf {input} > {output}'
+                'minimap2 -x map-ont {input} {rules.denovo.input} > {output.pf4} && racon -t 4 {rules.denovo.input} {output.pf4} {input} > {output}'
 rule medaka:
 	input:
 		rules.raconX4.output
@@ -76,6 +80,8 @@ rule prokka:
 		rules.circlator.output
 	output:
 		directory('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_prokka')
+	conda:
+		'envs/prokka.yml'
 	shell:
 		'prokka {input}/06.fixstart.fasta --outdir {output}'
 	
