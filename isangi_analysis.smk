@@ -20,7 +20,7 @@ rule polish_flye:
 	output:
 		directory('{root}/polish_flye_results')
 	shell:
-		'nextPolish run.cfg'
+		"polca.sh -a {input}/assembly.fasta -r'{wildcards.root}/17762-33892_1_71_bbduk_1.fastq.gz {wildcards.root}/17762-33892_1_71_bbduk_2.fastq.gz'"
 
 rule raconX1:
 	input:
@@ -33,11 +33,11 @@ rule raconX1:
 
 rule polish_raconX1:
 	input:
-		rules.raconX1.output
+		rules.raconX1.output.x1
 	output:
 		directory('{root}/polish_raconX1_results')
 	shell:
-		'nextPolish run.cfg'
+		"polca.sh -a {input} -r'{wildcards.root}/17762-33892_1_71_bbduk_1.fastq.gz {wildcards.root}/17762-33892_1_71_bbduk_2.fastq.gz'"
 
 rule raconX2:
         input:
@@ -50,11 +50,11 @@ rule raconX2:
 
 rule polish_raconX2:
 	input:
-		rules.raconX2.output
+		rules.raconX2.output.x2
 	output:
 		directory('{root}/polish_raconX2_results')
 	shell:
-		'nextPolish run.cfg'
+		"polca.sh -a {input} -r'{wildcards.root}/17762-33892_1_71_bbduk_1.fastq.gz {wildcards.root}/17762-33892_1_71_bbduk_2.fastq.gz'"
 rule raconX3:
         input:
                 rules.raconX2.output.x2
@@ -66,11 +66,11 @@ rule raconX3:
 
 rule polish_raconX3:
 	input:
-		rules.raconX3.output
+		rules.raconX3.output.x3
 	output:
 		directory('{root}/polish_raconX3_results')
 	shell:
-		'nextPolish run.cfg'
+		"polca.sh -a {input} -r'{wildcards.root}/17762-33892_1_71_bbduk_1.fastq.gz {wildcards.root}/17762-33892_1_71_bbduk_2.fastq.gz'"
 rule raconX4:
         input:
                 rules.raconX3.output.x3
@@ -82,11 +82,11 @@ rule raconX4:
 
 rule polish_raconX4:
 	input:
-		rules.raconX4.output
+		rules.raconX4.output.x4
 	output:
 		directory('{root}/polish_raconX4_results')
 	shell:
-		'nextPolish run.cfg'
+		"polca.sh -a {input} -r'{wildcards.root}/17762-33892_1_71_bbduk_1.fastq.gz {wildcards.root}/17762-33892_1_71_bbduk_2.fastq.gz'"
 rule medaka:
 	input:
 		rules.raconX4.output.x4
@@ -103,7 +103,7 @@ rule polish_medaka:
 	output:
 		directory('{root}/polish_medaka_results')
 	shell:
-		'nextPolish run.cfg'
+		"polca.sh -a {input}/consensus.fasta -r'{wildcards.root}/17762-33892_1_71_bbduk_1.fastq.gz {wildcards.root}/17762-33892_1_71_bbduk_2.fastq.gz'"
 rule circlator:
 	input:
 		rules.medaka.output
