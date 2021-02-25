@@ -9,7 +9,8 @@ rule all:
 		expand('{res}/{sample}_polish_raconX2_results',sample=samples,res=res),
 		expand('{res}/{sample}_polish_raconX3_results',sample=samples,res=res),
 		expand('{res}/{sample}_polish_raconX4_results',sample=samples,res=res),
-		expand('{res}/{sample}_polish_medaka_results',sample=samples,res=res)
+		expand('{res}/{sample}_polish_medaka_results',sample=samples,res=res),
+		expand('{res}/{sample}_polish_medaka2_results',sample=samples,res=res)
 
 rule denovo:
         input:
@@ -109,5 +110,22 @@ rule polish_medaka:
                 rules.medaka.output
         output:
                 directory('{res}/{sample}_polish_medaka_results')
+        shell:
+                "polca.sh -a {input}/consensus.fasta -r '{rules.polish_flye.input.r1} {rules.polish_flye.input.r2}' && mkdir {output} && mv consensus.fasta* {output}"
+rule medaka2:
+	input:
+		rules.medaka.output
+	output:
+		directory('{res}/{sample}_medaka2')
+	conda:
+		'envs/medaka.yml'
+	shell:
+		'medaka_consensus -i {rules.denovo.input} -d {input}/consensus.fasta -t 8  -m r941_min_fast_g303 -o {output}'
+
+rule polish_medaka2:
+        input:
+                rules.medaka2.output
+        output:
+                directory('{res}/{sample}_polish_medaka2_results')
         shell:
                 "polca.sh -a {input}/consensus.fasta -r '{rules.polish_flye.input.r1} {rules.polish_flye.input.r2}' && mkdir {output} && mv consensus.fasta* {output}"
