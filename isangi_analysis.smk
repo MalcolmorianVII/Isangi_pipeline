@@ -1,14 +1,15 @@
-samples = ['CHF10J']
+configfile:"config.yaml"
+#samples = ['CHF10J']
 root_dir = ['/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.02.06']
 rule all:
         input:
-                expand('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.02.06/{sample}_circularised',sample=samples),
-                expand('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.02.06/{sample}_amrfinder',sample=samples),
-                expand('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.02.06/{sample}_prokka',sample=samples)
+                expand('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.02.06/{sample}_circularised',sample=config["nanopore"]),
+                expand('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.02.06/{sample}_amrfinder',sample=config["nanopore"]),
+                expand('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.02.06/{sample}_prokka',sample=config["nanopore"])
 
 rule denovo:
         input:
-                expand('{root}/{sample}.fastq.gz',root=root_dir,sample=samples)
+                expand('{root}/{sample}.fastq.gz',root=root_dir,sample=config["nanopore"])
         output:
                 directory('{root}/{sample}_flye')
         shell:
