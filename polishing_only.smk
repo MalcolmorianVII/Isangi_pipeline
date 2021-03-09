@@ -1,20 +1,21 @@
-samples = ['CHF10J']
+configfile:"config.yaml"
+#samples = ['CHF10J']
 root_dir = ['/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.02.06']
 res = ['/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.02.16']
 rule all:
 	input:
-		#expand('{res}/{sample}_medaka',sample=samples,res=res),
-		expand('{res}/{sample}_polish_flye_results',sample=samples,res=res),
-		expand('{res}/{sample}_polish_raconX1_results',sample=samples,res=res),
-		expand('{res}/{sample}_polish_raconX2_results',sample=samples,res=res),
-		expand('{res}/{sample}_polish_raconX3_results',sample=samples,res=res),
-		expand('{res}/{sample}_polish_raconX4_results',sample=samples,res=res),
-		expand('{res}/{sample}_polish_medaka_results',sample=samples,res=res),
-		expand('{res}/{sample}_polish_medaka2_results',sample=samples,res=res)
-
+		expand('{res}/{sample}_polish_flye_results',sample=config["nanopore"],res=res),
+		expand('{res}/{sample}_polish_raconX1_results',sample=config["nanopore"],res=res),
+		expand('{res}/{sample}_polish_raconX2_results',sample=config["nanopore"],res=res),
+		expand('{res}/{sample}_polish_raconX3_results',sample=config["nanopore"],res=res),
+		expand('{res}/{sample}_polish_raconX4_results',sample=config["nanopore"],res=res),
+		expand('{res}/{sample}_polish_medaka_results',sample=config["nanopore"],res=res),
+		expand('{res}/{sample}_polish_medaka2_results',sample=config["nanopore"],res=res),
+		expand('{res}/polish_illumina_results',res=res)
+		
 rule denovo:
         input:
-                expand('{root}/{sample}.fastq.gz',root=root_dir,sample=samples)
+                expand('{root}/{sample}.fastq.gz',root=root_dir,sample=config["nanopore"])
         output:
                 directory('{res}/{sample}_flye')
         shell:
@@ -23,8 +24,8 @@ rule denovo:
 rule polish_flye:
 	input:
 		gen = rules.denovo.output,
-		r1 = expand('{root}/17762-33892_1_71_bbduk_1.fastq.gz',root=root_dir),
-		r2 = expand('{root}/17762-33892_1_71_bbduk_2.fastq.gz',root=root_dir)
+		r1 = expand('{root}/{read1}',root=root_dir,read1=config["illumina"][0]),
+		r2 = expand('{root}/{read2}',root=root_dir,read2=config["illumina"][1])
 	output:
 		directory('{res}/{sample}_polish_flye_results')
 	shell:
@@ -103,7 +104,7 @@ rule medaka:
 	conda:
 		'envs/medaka.yml'
 	shell:
-		'medaka_consensus -i {rules.denovo.input} -d {input} -t 8  -m r941_min_fast_g303 -o {output}'
+		'medaka_consensus -i {rules.denovo.input} -d {input} -t 8  -m r941_min_high_g303 -o {output}'
 
 rule polish_medaka:
         input:
@@ -120,7 +121,7 @@ rule medaka2:
 	conda:
 		'envs/medaka.yml'
 	shell:
-		'medaka_consensus -i {rules.denovo.input} -d {input}/consensus.fasta -t 8  -m r941_min_fast_g303 -o {output}'
+		'medaka_consensus -i {rules.denovo.input} -d {input}/consensus.fasta -t 8  -m r941_min_high_g303 -o {output}'
 
 rule polish_medaka2:
         input:
@@ -129,3 +130,19 @@ rule polish_medaka2:
                 directory('{res}/{sample}_polish_medaka2_results')
         shell:
                 "polca.sh -a {input}/consensus.fasta -r '{rules.polish_flye.input.r1} {rules.polish_flye.input.r2}' && mkdir {output} && mv consensus.fasta* {output}"
+rule spades:
+	input:
+		R1 = rules.polish_flye.input.r1,
+		R2 = rules.polish_flye.input.r2
+	output:
+		directory('{res}/illumina_results')
+	shell:
+		'spades.py -1 {input.R1} -2 {input.R2} -o {output}'
+
+rule polish_spades:
+	input:
+		rules.spades.output
+	output:
+		directory('{res}/polish_illumina_results')
+	shell:
+		"polca.sh -a {input}/contigs.fasta -r '{rules.polish_flye.input.r1} {rules.polish_flye.input.r2}' && mkdir {output} && mv contigs.fasta* {output}"
