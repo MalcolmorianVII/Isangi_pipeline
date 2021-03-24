@@ -1,6 +1,0 @@
-nanopore:
-  - CHF10J
-
-illumina:
-  - 17762-33892_1_71_bbduk_1.fastq.gz
-  - 17762-33892_1_71_bbduk_2.fastq.gz
