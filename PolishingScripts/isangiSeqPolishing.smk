@@ -1,7 +1,7 @@
-configfile:"config.yaml"
+configfile:"/home/ubuntu/data/belson/isangi_nanopore/qc/scripts/isangiConfig.yaml"
 #samples = ['CHF10J']
 root_dir = ['/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.02.06']
-res = ['/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.02.16']
+res = ['/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.03.24']
 rule all:
 	input:
 		expand('{res}/{sample}_polish_flye_results',sample=config["nanopore"],res=res),
@@ -17,7 +17,7 @@ rule denovo:
         input:
                 expand('{root}/{sample}.fastq.gz',root=root_dir,sample=config["nanopore"])
         output:
-                directory('{res}/{sample}_flye')
+                temp(directory('{res}/{sample}_flye'))
         shell:
                 'flye --nano-raw {input} -g 5m -o {output} -t 8 --plasmids'
 
@@ -100,9 +100,9 @@ rule medaka:
 	input:
 		rules.raconX4.output.x4
 	output:
-		directory('{res}/{sample}_medaka')
+		temp(directory('{res}/{sample}_medaka'))
 	conda:
-		'envs/medaka.yml'
+		'/home/ubuntu/data/belson/isangi_nanopore/qc/scripts/envs/medaka.yml'
 	shell:
 		'medaka_consensus -i {rules.denovo.input} -d {input} -t 8  -m r941_min_high_g303 -o {output}'
 
@@ -117,9 +117,9 @@ rule medaka2:
 	input:
 		rules.medaka.output
 	output:
-		directory('{res}/{sample}_medaka2')
+		temp(directory('{res}/{sample}_medaka2'))
 	conda:
-		'envs/medaka.yml'
+		'/home/ubuntu/data/belson/isangi_nanopore/qc/scripts/envs/medaka.yml'
 	shell:
 		'medaka_consensus -i {rules.denovo.input} -d {input}/consensus.fasta -t 8  -m r941_min_high_g303 -o {output}'
 
@@ -135,7 +135,7 @@ rule spades:
 		R1 = rules.polish_flye.input.r1,
 		R2 = rules.polish_flye.input.r2
 	output:
-		directory('{res}/illumina_results')
+		temp(directory('{res}/illumina_results'))
 	shell:
 		'spades.py -1 {input.R1} -2 {input.R2} -o {output}'
 
