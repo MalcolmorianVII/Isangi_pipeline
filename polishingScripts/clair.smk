@@ -1,6 +1,6 @@
 configfile:"/home/ubuntu/data/belson/isangi_nanopore/qc/scripts/isangiConfig.yaml"
 sampleDir = ['/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.02.06']
-results = ['/home/ubuntu/data/belson/isangi_nanopore/qc/results/checkVariant'] # Check folder
+results = ['/home/ubuntu/data/belson/isangi_nanopore/qc/results/polishing/2021.04.16'] # Check folder
 refs = ['17762-33892_1_71_contigs.fa']
 model = ['/home/belson/data/clair/ont/model']
 rule all:
