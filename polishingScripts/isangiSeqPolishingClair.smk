@@ -35,7 +35,7 @@ rule raconX1:
 	input:
 		rules.flye.output
 	output:
-		x1 = '{results}/{sample}RaconX1.fasta',
+		x1 = temp('{results}/{sample}RaconX1.fasta'),
 		pf1 = temp('{results}/{sample}.racon.paf')
 	shell:
 		'minimap2 -x map-ont {input}/assembly.fasta {rules.flye.input} > {output.pf1} && racon -t 4 {rules.flye.input} {output.pf1} {input}/assembly.fasta > {output.x1}'
@@ -84,7 +84,7 @@ rule raconX4:
         input:
                 rules.raconX3.output.x3
         output:
-                x4 = ('{results}/{sample}RaconX4.fasta'),
+                x4 = temp('{results}/{sample}RaconX4.fasta'),
 		pf4 = temp('{results}/{sample}.racon4.paf')
         shell:
                 'minimap2 -x map-ont {input} {rules.flye.input} > {output.pf4} && racon -t 4 {rules.flye.input} {output.pf4} {input} > {output.x4}'
@@ -100,7 +100,7 @@ rule medaka:
 	input:
 		rules.raconX4.output.x4
 	output:
-		temp(directory('{results}/{sample}medaka'))
+		directory('{results}/{sample}medaka')
 	conda:
 		'/home/ubuntu/data/belson/isangi_nanopore/qc/scripts/envs/medaka.yml'
 	shell:
