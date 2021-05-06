@@ -34,7 +34,7 @@ rule raconX1:
 	input:
 		rules.flye.output
 	output:
-		x1 = temp('{results}/{sample}RaconX1.fasta'),
+		x1 = '{results}/{sample}RaconX1.fasta',
 		pf1 = temp('{results}/{sample}.racon.paf')
 	shell:
 		'minimap2 -x map-ont {input}/assembly.fasta {rules.flye.input} > {output.pf1} && racon -t 4 {rules.flye.input} {output.pf1} {input}/assembly.fasta > {output.x1}'
