@@ -6,7 +6,7 @@ eval "$(conda shell.bash hook)"
 conda activate "clair-env"
 
 model=/home/belson/data/clair/ont/model
-ref=$2/$1Medaka/consensus.fasta
+ref=$2/$1medaka/consensus.fasta
 bam=$2/$1.sorted.bam
 callVar=$2/$1CallVar
 flyeClair=$2/$1_flye_clair.vcf
