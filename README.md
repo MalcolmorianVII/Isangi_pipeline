@@ -8,7 +8,7 @@ Email: bkutambe@mlw.mw
 ## Introduction
 This repository hosts Snakemake-based pipelines for genomics analysis of Salmonella Isangi nanopore data.
 The repository structure is as follows:
-  *  <b>envs</b><br>
+ * <b>envs</b><br>
     - Contains the yaml environment configuration scripts.
  * <b>analysis scripts</b><br>
     - Contains snakemake scripts for complete genome analysis
