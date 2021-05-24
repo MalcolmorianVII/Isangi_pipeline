@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#! /usr/bin/bash
 
 #NOTE:	$1 = {wildcards.sample}; $2 =  {wildcards.results}
 set -e 
