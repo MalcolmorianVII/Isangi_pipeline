@@ -1,7 +1,7 @@
 # Snakeflows
 
-Contact: Belson Malcolm Kutambe
-Email: bkutambe@mlw.mw
+<b>Contact</b>: Belson Malcolm Kutambe<br>
+<b>Email</b>: bkutambe@mlw.mw
 
 ---
 
@@ -17,7 +17,7 @@ The repository structure is as follows:
  * <b>reports</b><br>
     - Contains workflow reports of the pipelines run so far
  * <b>supplementary scripts</b><br>
-    - Contains bash scripts that act as helper scripts to organize directories in the pipelines,split files and generate workflows.
+    - Contains bash scripts that act as helper scripts to organize directories in the pipelines,split files and generate workflows graphs.
  * <b>workflow graphs</b><br>
     - Contains graphical representation of the workflows in svg format.
 
