@@ -5,7 +5,7 @@ results = ['/home/ubuntu/data/belson/isangi_nanopore/qc/results/polishing/2021.0
 root_dir = config['torun']
 model = config['model']
 def reads(wildcards):
-	return expand('{root_dir}/barcode0{sample}.fastq.gz',root_dir=root_dir,sample=samples)
+	return expand('{root_dir}/barcode0{{sample}}.fastq.gz',root_dir=root_dir,sample=samples)
 #def lambda wildcards : config[wildcards.sample]["R1"](wildcards):
 #	return expand('{read1}',read1=config[wildcards.sample]["R1"])
 #def  lambda wildcards : config[wildcards.sample]["R2"](wildcards):
@@ -42,12 +42,13 @@ rule polishFlye:
 
 rule raconX1:
 	input:
-		rules.flye.output
+		gen = rules.flye.output,
+		nano = reads
 	output:
 		x1 = temp('{results}/{sample}/{sample}RaconX1.fasta'),
 		pf1 = temp('{results}/{sample}/{sample}.racon.paf')
 	shell:
-		'minimap2 -x map-ont {input}/assembly.fasta {input.nano} > {output.pf1} && racon -t 4 {input.nano} {output.pf1} {input}/assembly.fasta > {output.x1}'
+		'minimap2 -x map-ont {input.gen}/assembly.fasta {input.nano} > {output.pf1} && racon -t 4 {input.nano} {output.pf1} {input}/assembly.fasta > {output.x1}'
 
 rule polish_raconX1:
 	input:
