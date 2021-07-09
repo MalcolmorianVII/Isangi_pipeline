@@ -3,6 +3,8 @@
 # $2 the input file i.e assembly.fasta in this case
 # $3 the output i.e plasmid.fasta or chromosome.fasta according to $1
 set +e
+set -u
+
 num=$(grep -n "contig_1" $2 | cut -d: -f1)
 
 if  [ $1 == "plasmid" ]	#For plasmids
