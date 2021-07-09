@@ -1,17 +1,35 @@
-samples:
-  CHF10J:
-    nanopore: /home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.02.06/CHF10J.fastq.gz
-    illumina:
-      - /home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.02.06/17762-33892_1_71_bbduk_1.fastq.gz
-      - /home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.02.06/17762-33892_1_71_bbduk_2.fastq.gz
-  CAAWCD:
-    nanopore: /home/ubuntu/data/belson/isangi_nanopore/qc/results/samples/CAAWCD_nodupes.fastq
-    illumina:
-      - /home/ubuntu/data/phil/salmonella_samples/illumina/17761-33892_1_65_bbduk_1.fastq.gz
-      - /home/ubuntu/data/phil/salmonella_samples/illumina/17761-33892_1_65_bbduk_2.fastq.gz
-  CHF10J2:
-    nanopore: /home/ubuntu/data/belson/isangi_nanopore/qc/results/samples/CHF10J2_nodupes.fastq
-    illumina:
-      - /home/ubuntu/data/phil/salmonella_samples/illumina/17764-33892_1_77_bbduk_1.fastq.gz
-      - /home/ubuntu/data/phil/salmonella_samples/illumina/17764-33892_1_77_bbduk_2.fastq.gz
-
+1_Acinetobacter_baumannii_J9:
+  R1:
+    /home/ubuntu/data/phil/monash_data/clean_illumina_reads/Acinetobacter_baumannii_J9/Acinetobacter_baumannii_J9_R1.fastq.gz
+  R2:
+    /home/ubuntu/data/phil/monash_data/clean_illumina_reads/Acinetobacter_baumannii_J9/Acinetobacter_baumannii_J9_R2.fastq.gz
+2_Citrobacter_koseri_MINF_9D:
+  R1:
+    /home/ubuntu/data/phil/monash_data/clean_illumina_reads/Citrobacter_koseri_MINF_9D/Citrobacter_koseri_MINF_9D_R1.fastq.gz
+  R2:
+    /home/ubuntu/data/phil/monash_data/clean_illumina_reads/Citrobacter_koseri_MINF_9D/Citrobacter_koseri_MINF_9D_R2.fastq.gz
+3_Enterobacter_kobei_MSB1_1B:
+  R1:
+    /home/ubuntu/data/phil/monash_data/clean_illumina_reads/Enterobacter_kobei_MSB1_1B/Enterobacter_kobei_MSB1_1B_R1.fastq.gz
+  R2:
+    /home/ubuntu/data/phil/monash_data/clean_illumina_reads/Enterobacter_kobei_MSB1_1B/Enterobacter_kobei_MSB1_1B_R2.fastq.gz
+4_Haemophilus_unknown_M1C132_1:
+  R1:
+    /home/ubuntu/data/phil/monash_data/clean_illumina_reads/Haemophilus_unknown_M1C132_1/Haemophilus_unknown_M1C132_1_R1.fastq.gz
+  R2:
+    /home/ubuntu/data/phil/monash_data/clean_illumina_reads/Haemophilus_unknown_M1C132_1/Haemophilus_unknown_M1C132_1_R2.fastq.gz
+5_Klebsiella_oxytoca_MSB1_2C:
+  R1:
+    /home/ubuntu/data/phil/monash_data/clean_illumina_reads/Klebsiella_oxytoca_MSB1_2C/Klebsiella_oxytoca_MSB1_2C_R1.fastq.gz
+  R2:
+    /home/ubuntu/data/phil/monash_data/clean_illumina_reads/Klebsiella_oxytoca_MSB1_2C/Klebsiella_oxytoca_MSB1_2C_R2.fastq.gz
+7_Klebsiella_variicola_INF345:
+  R1:
+    /home/ubuntu/data/phil/monash_data/clean_illumina_reads/Klebsiella_variicola_INF345/Klebsiella_variicola_INF345_R1.fastq.gz
+  R2:
+    /home/ubuntu/data/phil/monash_data/clean_illumina_reads/Klebsiella_variicola_INF345/Klebsiella_variicola_INF345_R2.fastq.gz
+8_Serratia_marcescens_17-147-1671:
+  R1:
+    /home/ubuntu/data/phil/monash_data/clean_illumina_reads/Serratia_marcescens_17-147-1671/Serratia_marcescens_17-147-1671_R1.fastq.gz
+  R2:
+    /home/ubuntu/data/phil/monash_data/clean_illumina_reads/Serratia_marcescens_17-147-1671/Serratia_marcescens_17-147-1671_R2.fastq.gz

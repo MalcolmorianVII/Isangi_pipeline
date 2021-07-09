@@ -1,24 +1,28 @@
 configfile:"/home/ubuntu/data/belson/isangi_nanopore/qc/scripts/isangiConfig.yaml"
-sampleDir = ['/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.02.06']
-results = ['/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.04.15']
+sampleDir = ['/home/ubuntu/data/phil/salmonella_samples/20210205_1324_MC-110370_0_FAO37531_76db0abb']
+#samples = ['CAAWCD','CHF10J2']
+samples = ['CAAWCD']
+illumina = ['/home/ubuntu/data/phil/salmonella_samples/illumina']
+reads = ['17761-33892_1_65','17764-33892_1_77']
+results = ['/home/ubuntu/data/belson/isangi_nanopore/qc/results/analysis/2021.05.14']
 rule all:
         input:
-                expand('{results}/{sample}Amrfinder',results = results,sample=config["nanopore"]),
-                expand('{results}/{sample}Prokka',results = results,sample=config["nanopore"])
+                expand('{results}/{sample}Amrfinder',results = results,sample = samples),
+                expand('{results}/{sample}Bakta',results = results,sample = samples)
 
 rule flye:
-        input:
-                expand('{sampleDir}/{sample}.fastq.gz',sampleDir=sampleDir,sample=config["nanopore"])
-        output:
+	input:
+		expand('{sampleDir}/{sample}',sampleDir = sampleDir,sample = samples)
+	output:
                 directory('{results}/{sample}Flye')
-        shell:
-                'flye --nano-raw {input} -g 5m -o {output} -t 8 --plasmids'
+	shell:
+                'flye --nano-raw {input}/{wildcards.sample}.fastq -g 5m -o {output} -t 8 --plasmids'
 
 rule polishFlye:
 	input:
-		gen = rules.flye.output,
-                r1 = expand('{sampleDir}/{read1}',sampleDir = sampleDir,read1=config["illumina"][0]),
-                r2 = expand('{sampleDir}/{read2}',sampleDir = sampleDir,read2=config["illumina"][1])
+                r1 = expand('{illumina}/{reads}_bbduk_1.fastq.gz',illumina = illumina,reads = reads),
+                r2 = expand('{illumina}/{reads}_bbduk_2.fastq.gz',illumina = illumina,reads = reads),
+		gen = rules.flye.output
 	output:
 		directory('{results}/polishFlyeResults')
 	shell:
@@ -42,12 +46,12 @@ rule polishRaconX1:
 		"polca.sh -a {input} -r '{rules.polishFlye.input.r1} {rules.polishFlye.input.r2}' && mkdir {output} && mv {wildcards.sample}RaconX1.fasta* {output}"
 
 rule raconX2:
-        input:
-                rules.raconX1.output.racon1
-        output:
-                racon2 = temp('{results}/{sample}RaconX2.fasta'),
+	input:
+		rules.raconX1.output.racon1
+	output:
+		racon2 = temp('{results}/{sample}RaconX2.fasta'),
 		paf2 = temp('{results}/{sample}.racon2.paf')
-        shell:
+	shell:
                 'minimap2 -x map-ont {input} {rules.flye.input} > {output.paf2} && racon -t 4 {rules.flye.input} {output.paf2} {input} > {output.racon2}'
 
 rule polishRaconX2:
@@ -58,12 +62,12 @@ rule polishRaconX2:
 	shell:
 		"polca.sh -a {input} -r '{rules.polishFlye.input.r1} {rules.polishFlye.input.r2}' && mkdir {output} && mv {wildcards.sample}RaconX2.fasta* {output}"
 rule raconX3:
-        input:
-                rules.raconX2.output.racon2
-        output:
+	input:
+		rules.raconX2.output.racon2 
+	output:
                 racon3 = temp('{results}/{sample}RaconX3.fasta'),
 		paf3 = temp('{results}/{sample}.racon3.paf')
-        shell:
+	shell:
                 'minimap2 -x map-ont {input} {rules.flye.input} > {output.paf3} && racon -t 4 {rules.flye.input} {output.paf3} {input} > {output.racon3}'
 
 rule polishRaconX3:
@@ -74,12 +78,12 @@ rule polishRaconX3:
 	shell:
 		"polca.sh -a {input} -r '{rules.polishFlye.input.r1} {rules.polishFlye.input.r2}' && mkdir {output} && mv {wildcards.sample}RaconX3.fasta* {output}"
 rule raconX4:
-        input:
-                rules.raconX3.output.racon3
-        output:
-                racon4 = ('{results}/{sample}RaconX4.fasta'),
+	input:
+		rules.raconX3.output.racon3
+	output:
+                racon4 = '{results}/{sample}RaconX4.fasta',
 		paf4 = temp('{results}/{sample}.racon4.paf')
-        shell:
+	shell:
                 'minimap2 -x map-ont {input} {rules.flye.input} > {output.paf4} && racon -t 4 {rules.flye.input} {output.paf4} {input} > {output.racon4}'
 
 rule polishRaconX4:
@@ -124,13 +128,20 @@ rule amrfinder:
 	shell:
 		'amrfinder --plus -n {input}/06.fixstart.fasta -O Salmonella > {output}'
 
-rule prokka:
+rule bakta:
 	input:
 		rules.circlator.output
 	output:
-		directory('{results}/{sample}Prokka')
-	conda:
-		'/home/ubuntu/data/belson/isangi_nanopore/qc/scripts/envs/prokka.yml'
+		directory('{results}/{sample}Bakta')
 	shell:
-		'prokka {input}/06.fixstart.fasta --prefix {wildcards.sample} --genus Salmonella --species enterica --outdir {output}'
+		'./bakta.sh {input}/06.fixstart.fasta {output}'
+#rule prokka:
+#	input:
+#		rules.circlator.output
+#	output:
+#		directory('{results}/{sample}Prokka')
+#	conda:
+#		'/home/ubuntu/data/belson/isangi_nanopore/qc/scripts/envs/prokka.yml'
+#	shell:
+#		'prokka {input}/06.fixstart.fasta --prefix {wildcards.sample} --genus Salmonella --species enterica --outdir {output}'
 	

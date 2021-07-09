@@ -1,7 +1,11 @@
 configfile:"/home/ubuntu/data/belson/isangi_nanopore/qc/scripts/isangiConfig.yaml"
 samples = ['1_Acinetobacter_baumannii_J9','2_Citrobacter_koseri_MINF_9D','3_Enterobacter_kobei_MSB1_1B','4_Haemophilus_unknown_M1C132_1','5_Klebsiella_oxytoca_MSB1_2C','7_Klebsiella_variicola_INF345','8_Serratia_marcescens_17-147-1671']
 results = ['/home/ubuntu/data/belson/isangi_nanopore/qc/results/polishing/2021.07.08/Other_species/Guppy5']
-nano = '/home/ubuntu/data/belson/monash_data/guppy_v5.0.7_reads'
+#nano = '/home/ubuntu/data/belson/monash_data/guppy_v5.0.7_reads'
+root_dir = config['torun']
+model = config['model']
+def reads(wildcards):
+	return expand('{root_dir}/barcode0{{sample}}.fastq.gz',root_dir=root_dir,sample=samples)
 #def lambda wildcards : config[wildcards.sample]["R1"](wildcards):
 #	return expand('{read1}',read1=config[wildcards.sample]["R1"])
 #def  lambda wildcards : config[wildcards.sample]["R2"](wildcards):
@@ -18,14 +22,13 @@ rule all:
 		expand('{results}/{sample}/{sample}polishMedaka',sample = samples,results = results),
 		#expand('{results}/{sample}/{sample}polishMedaka2',sample = samples,results = results),
 		expand('{results}/{sample}/{sample}polishIllumina',results = results,sample=samples)
-		
 rule flye:
 	input:
-		'/home/ubuntu/data/belson/monash_data/guppy_v5.0.7_reads/barcode0{sample}.fastq.gz'	# {{sample}} 2 indicate it is a wildcard from output
+		nano=reads
 	output:
-                directory('{results}/{sample}/{sample}Flye')
+		directory('{results}/{sample}/{sample}Flye')
 	shell:
-                'flye --nano-raw {input} -g 5m -o {output} -t 8 --plasmids'
+		'flye --nano-raw {input.nano} -g 5m -o {output} -t 8 --plasmids'
 
 rule polishFlye:
 	input:
@@ -39,12 +42,13 @@ rule polishFlye:
 
 rule raconX1:
 	input:
-		rules.flye.output
+		gen = rules.flye.output,
+		nano = reads
 	output:
 		x1 = temp('{results}/{sample}/{sample}RaconX1.fasta'),
 		pf1 = temp('{results}/{sample}/{sample}.racon.paf')
 	shell:
-		'minimap2 -x map-ont {input}/assembly.fasta /home/ubuntu/data/belson/monash_data/guppy_v5.0.7_reads/barcode0{wildcards.sample}.fastq.gz > {output.pf1} && racon -t 4 /home/ubuntu/data/belson/monash_data/guppy_v5.0.7_reads/barcode0{wildcards.sample}.fastq.gz {output.pf1} {input}/assembly.fasta > {output.x1}'
+		'minimap2 -x map-ont {input.gen}/assembly.fasta {input.nano} > {output.pf1} && racon -t 4 {input.nano} {output.pf1} {input}/assembly.fasta > {output.x1}'
 
 rule polish_raconX1:
 	input:
@@ -58,12 +62,13 @@ rule polish_raconX1:
 
 rule raconX2:
         input:
-                rules.raconX1.output.x1
+                gen = rules.raconX1.output.x1,
+		nano = reads
         output:
                 x2 = temp('{results}/{sample}/{sample}RaconX2.fasta'),
 		pf2 = temp('{results}/{sample}/{sample}.racon2.paf')
         shell:
-                'minimap2 -x map-ont {input} /home/ubuntu/data/belson/monash_data/guppy_v5.0.7_reads/barcode0{wildcards.sample}.fastq.gz > {output.pf2} && racon -t 4 /home/ubuntu/data/belson/monash_data/guppy_v5.0.7_reads/barcode0{wildcards.sample}.fastq.gz {output.pf2} {input} > {output.x2}'
+                'minimap2 -x map-ont {input.gen} {input.nano} > {output.pf2} && racon -t 4 {input.nano} {output.pf2} {input.gen} > {output.x2}'
 
 rule polish_raconX2:
 	input:
@@ -76,12 +81,13 @@ rule polish_raconX2:
 		"polca.sh -a {input.gen} -r '{input.r1} {input.r2}' && mkdir {output} && mv {wildcards.sample}RaconX2.fasta* {output}"
 rule raconX3:
         input:
-                rules.raconX2.output.x2
+                gen = rules.raconX2.output.x2,
+		nano = reads
         output:
                 x3 = temp('{results}/{sample}/{sample}RaconX3.fasta'),
 		pf3 = temp('{results}/{sample}/{sample}.racon3.paf')
         shell:
-                'minimap2 -x map-ont {input} /home/ubuntu/data/belson/monash_data/guppy_v5.0.7_reads/barcode0{wildcards.sample}.fastq.gz > {output.pf3} && racon -t 4 /home/ubuntu/data/belson/monash_data/guppy_v5.0.7_reads/barcode0{wildcards.sample}.fastq.gz {output.pf3} {input} > {output.x3}'
+                'minimap2 -x map-ont {input.gen} {input.nano} > {output.pf3} && racon -t 4 {input.nano} {output.pf3} {input.gen} > {output.x3}'
 
 rule polish_raconX3:
 	input:
@@ -94,12 +100,13 @@ rule polish_raconX3:
 		"polca.sh -a {input.gen} -r '{input.r1} {input.r2}' && mkdir {output} && mv {wildcards.sample}RaconX3.fasta* {output}"
 rule raconX4:
         input:
-                rules.raconX3.output.x3
+                gen = rules.raconX3.output.x3,
+		nano = reads
         output:
                 x4 = ('{results}/{sample}/{sample}RaconX4.fasta'),
 		pf4 = temp('{results}/{sample}/{sample}.racon4.paf')
         shell:
-                'minimap2 -x map-ont {input} /home/ubuntu/data/belson/monash_data/guppy_v5.0.7_reads/barcode0{wildcards.sample}.fastq.gz > {output.pf4} && racon -t 4 /home/ubuntu/data/belson/monash_data/guppy_v5.0.7_reads/barcode0{wildcards.sample}.fastq.gz {output.pf4} {input} > {output.x4}'
+                'minimap2 -x map-ont {input.gen} {input.nano} > {output.pf4} && racon -t 4 {input.nano} {output.pf4} {input.gen} > {output.x4}'
 
 rule polish_raconX4:
 	input:
@@ -112,13 +119,14 @@ rule polish_raconX4:
 		"polca.sh -a {input.gen} -r '{input.r1} {input.r2}' && mkdir {output} && mv {wildcards.sample}RaconX4.fasta* {output}"
 rule medaka:
 	input:
-		rules.raconX4.output.x4
+		gen = rules.raconX4.output.x4,
+		nano = reads
 	output:
 		directory('{results}/{sample}/{sample}medaka')
 	conda:
 		'/home/ubuntu/data/belson/isangi_nanopore/qc/scripts/envs/medaka.yml'
 	shell:
-		'medaka_consensus -i /home/ubuntu/data/belson/monash_data/guppy_v5.0.7_reads/barcode0{wildcards.sample}.fastq.gz -d {input} -t 8  -m r941_min_sup_g507 -o {output}'
+		'medaka_consensus -i {input.nano} -d {input.gen} -t 8  -m {model} -o {output}'
 
 rule polish_medaka:
         input:
