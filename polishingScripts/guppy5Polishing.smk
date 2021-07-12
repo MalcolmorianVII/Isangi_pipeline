@@ -48,7 +48,7 @@ rule raconX1:
 		x1 = temp('{results}/{sample}/{sample}RaconX1.fasta'),
 		pf1 = temp('{results}/{sample}/{sample}.racon.paf')
 	shell:
-		'minimap2 -x map-ont {input.gen}/assembly.fasta {input.nano} > {output.pf1} && racon -t 4 {input.nano} {output.pf1} {input}/assembly.fasta > {output.x1}'
+		'minimap2 -x map-ont {input.gen}/assembly.fasta {input.nano} > {output.pf1} && racon -t 4 {input.nano} {output.pf1} {input.gen}/assembly.fasta > {output.x1}'
 
 rule polish_raconX1:
 	input:
