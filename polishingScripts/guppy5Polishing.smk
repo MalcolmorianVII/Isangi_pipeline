@@ -1,6 +1,6 @@
 configfile:"/home/ubuntu/data/belson/isangi_nanopore/qc/scripts/isangiConfig.yaml"
 samples = ['1_Acinetobacter_baumannii_J9','2_Citrobacter_koseri_MINF_9D','3_Enterobacter_kobei_MSB1_1B','4_Haemophilus_unknown_M1C132_1','5_Klebsiella_oxytoca_MSB1_2C','7_Klebsiella_variicola_INF345','8_Serratia_marcescens_17-147-1671']
-results = ['/home/ubuntu/data/belson/isangi_nanopore/qc/results/polishing/2021.07.08/Other_species/Guppy5']
+results = ['/home/ubuntu/data/belson/isangi_nanopore/qc/results/polishing/2021.07.14/Other_species/Guppy5']
 #nano = '/home/ubuntu/data/belson/monash_data/guppy_v5.0.7_reads'
 root_dir = config['torun']
 model = config['model']
