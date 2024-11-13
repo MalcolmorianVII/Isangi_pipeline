@@ -18,6 +18,4 @@ The repository structure is as follows:
     - Contains workflow reports of the pipelines run so far
  * <b>supplementary scripts</b><br>
     - Contains bash scripts that act as helper scripts to organize directories in the pipelines,split files and generate workflows graphs.
- * <b>workflow graphs</b><br>
-    - Contains graphical representation of the workflows in svg format.
 
