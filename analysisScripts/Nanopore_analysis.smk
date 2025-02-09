@@ -17,8 +17,21 @@ rule denovo:
         shell:
                 'flye --nano-raw {input} -g 5m -o {output} -t 8 --plasmids'
 
-# Four rounds of genome polishing with Racon in a sequential order
-rule raconX1:
+
+# Map the accurate short reads to the assembly for polishing
+rule  minimap:
+	input:
+		rules.denovo.output,
+		r1 = '/home/ubuntu/samples/{sample}_1.fastq',
+		r2 = '/home/ubuntu/samples/{sample}_2.fastq'
+	output:
+		temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}.racon.paf')
+
+	shell:
+		'minimap2 -x sr {input}/assembly.fasta {input.r1} {input.r2} > {output}'
+
+# Genome polishing with Racon
+rule racon:
 	input:
 		rules.denovo.output
 	output:
@@ -27,33 +40,7 @@ rule raconX1:
 
 	shell:
 		'minimap2 -x map-ont {input}/assembly.fasta {rules.denovo.input} > {output.paf1} && racon -t 4 {rules.denovo.input} {output.paf1} {input}/assembly.fasta > {output.racon1}'
-rule raconX2:
-	# The input is the output of raconX1 stage
-        input:
-                rules.raconX1.output.racon1
-        output:
-                racon2 = temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_raconX2.fasta'),
-		paf2 = temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}.racon2.paf')
-        shell:
-                'minimap2 -x map-ont {input} {rules.denovo.input} > {output.paf2} && racon -t 4 {rules.denovo.input} {output.paf2} {input} > {output.racon2}'
-rule raconX3:
-	# The input is the output of raconX2 stage
-        input:
-                rules.raconX2.output.racon2
-        output:
-                racon3 = temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_raconX3.fasta'),
-		paf3 = temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}.racon3.paf')
-        shell:
-                'minimap2 -x map-ont {input} {rules.denovo.input} > {output.paf3} && racon -t 4 {rules.denovo.input} {output.paf3} {input} > {output.racon3}'
-rule raconX4:
-	# The input is the output of raconX3 stage
-        input:
-                rules.raconX3.output.racon3
-        output:
-                racon4 = ('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_raconX4.fasta'),
-		paf4 = temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}.racon4.paf')
-        shell:
-                'minimap2 -x map-ont {input} {rules.denovo.input} > {output.paf4} && racon -t 4 {rules.denovo.input} {output.paf4} {input} > {output.racon4}'
+
 rule medaka:
 	# The input is the output of raconX4 stage
 	input:
