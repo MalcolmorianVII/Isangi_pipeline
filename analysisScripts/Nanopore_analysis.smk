@@ -33,27 +33,26 @@ rule  minimap:
 # Genome polishing with Racon
 rule racon:
 	input:
-		rules.denovo.output
+		rules.minimap.output
 	output:
-		racon1 = '/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_raconX1.fasta',
-		paf1 = '/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}.racon.paf'
+		temp('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_racon.fasta')
 
 	shell:
-		'minimap2 -x map-ont {input}/assembly.fasta {rules.denovo.input} > {output.paf1} && racon -t 4 {rules.denovo.input} {output.paf1} {input}/assembly.fasta > {output.racon1}'
+		'racon -t 4 {merged_reads} {input} {input}/assembly.fasta > {output}' # merged r1 & r2 
 
+# Genome polishing with Medaka
 rule medaka:
-	# The input is the output of raconX4 stage
 	input:
-		rules.raconX4.output.racon4
+		rules.racon.output
 	output:
 		directory('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_medaka')
 	conda:
 		'envs/medaka.yml'
 	shell:
-		'medaka_consensus -i {rules.denovo.input} -d {input} -t 8  -m r941_min_fast_g303 -o {output}'
+		'medaka_consensus -i {merged_reads} -d {input} -t 8  -m r941_min_fast_g303 -o {output}'
 
 rule circlator:
-	# Circularizing the draft genome after polishing i.e coorecting breaks introduced during polishing & assmebly????
+	# Circularizing the draft genome after polishing i.e correcting breaks introduced during polishing & assembly????
 	input:
 		rules.medaka.output
 	output:
