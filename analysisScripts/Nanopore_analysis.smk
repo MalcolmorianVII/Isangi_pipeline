@@ -71,14 +71,14 @@ rule amrfinder:
 	shell:
 		'amrfinder --plus -n {input}/06.fixstart.fasta -O Salmonella > {output}'
 
-rule prokka:
+rule bakta:
 	# Annotating the genome
 	input:
 		rules.circlator.output
 	output:
-		directory('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_prokka')
+		directory('/home/ubuntu/data/belson/isangi_nanopore/qc/results/2021.01.18/{sample}_bakta')
 	conda:
-		'envs/prokka.yml'
+		'envs/bakta.yml'
 	shell:
-		'prokka {input}/06.fixstart.fasta --outdir {output}'
+		'bakta --db {db_path} --threads 16 --prefix {wildcards.sample} --output {output} --force {input}/06.fixstart.fasta '
 	
